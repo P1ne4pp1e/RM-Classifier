@@ -5,7 +5,7 @@
 
 # ==================== 数据集配置 ====================
 dataset:
-  root: datasets/armor_dataset-20251210  # 数据集根目录（相对于项目根）
+  root: "datasets/armor_dataset-20251210-only-sentry"  # 数据集根目录（相对于项目根）
   none_class_name: collection-none        # None类的文件夹名
   image_size: [32, 32]                    # 输入图像尺寸 [H, W]
   image_format: "*.png"                   # 图像文件格式
@@ -57,10 +57,10 @@ features:
 
 # ==================== 聚类配置 ====================
 clustering:
-  k_per_class: 15          # 每个正常类的 K-Means 聚类中心数量
+  k_per_class: 25          # 每个正常类的 K-Means 聚类中心数量
                            # 增大→捕获更多类内变化，但推理时质心总数也增多
                            # 建议范围：10~25，小数据集用小值，大数据集用大值
-  n_init: 100               # K-Means 随机初始化次数（取最优结果）
+  n_init: 50               # K-Means 随机初始化次数（取最优结果）
                            # 增大→更稳定的质心，但训练更慢；建议 10~30
   max_iter: 1000            # K-Means 单次运行最大迭代次数
   random_seed: 20260306
@@ -74,20 +74,20 @@ rejection:
   # 阈值 = 正常类训练样本最近质心距离的第 P 分位数
   # 增大 P → 更宽松（误拒少，但 None 漏检多）
   # 减小 P → 更严格（误拒多，但 None 漏检少）
-  distance_percentile: 90.0   # 建议范围：90~98
+  distance_percentile: 98.0   # 建议范围：90~98
 
   # 辅助机制：马氏距离（考虑类内协方差分布形状）
   # 与距离阈值取并集：任一触发即判 None
   mahalanobis:
     enabled: true
-    percentile: 98.0           # 马氏距离阈值的分位数
+    percentile: 95.0           # 马氏距离阈值的分位数
     regularization: 1.0e-4     # 协方差矩阵正则化系数，防止奇异
                                # 若出现数值不稳定，适当增大（如 1e-3）
                                # 注意：只有在 PCA 维度 << 样本数/5 时才稳定可用
 
 # ==================== 输出配置 ====================
 output:
-  model_path: output/cluster_model.joblib      # 训练产物：模型文件
-  report_path: output/evaluation_report.txt    # 评估报告
-  plots_dir: output/plots                      # 可视化图表输出目录
+  model_path: output/cluster_model_only_sentry.joblib      # 训练产物：模型文件
+  report_path: output/evaluation_report_only_sentry.txt    # 评估报告
+  plots_dir: output/plots_only_sentry                      # 可视化图表输出目录
   verbose: true              # 是否打印训练/评估过程详情
